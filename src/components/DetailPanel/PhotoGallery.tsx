@@ -108,20 +108,22 @@ export function PhotoGallery({ placeId, googlePhotoRefs, refreshKey }: Props) {
       {lightboxIndex !== null && activeUrls[lightboxIndex] && (
         <div className="lightbox" onClick={() => setLightboxIndex(null)}>
           <button className="lightbox-close">✕</button>
-          {lightboxIndex > 0 && (
-            <button className="lightbox-prev" onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex - 1); }}>‹</button>
-          )}
           <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <img src={activeUrls[lightboxIndex]} alt="" className="lightbox-img" />
+            <div className="lightbox-img-wrapper">
+              {lightboxIndex > 0 && (
+                <button className="lightbox-prev" onClick={() => setLightboxIndex(lightboxIndex - 1)}>‹</button>
+              )}
+              <img src={activeUrls[lightboxIndex]} alt="" className="lightbox-img" />
+              {lightboxIndex < activeUrls.length - 1 && (
+                <button className="lightbox-next" onClick={() => setLightboxIndex(lightboxIndex + 1)}>›</button>
+              )}
+            </div>
             <p className="lightbox-caption">
               {tab === 'mine' && userPhotos[lightboxIndex]
                 ? `Uploaded ${new Date(userPhotos[lightboxIndex].uploadedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}`
                 : 'Photo via Google'}
             </p>
           </div>
-          {lightboxIndex < activeUrls.length - 1 && (
-            <button className="lightbox-next" onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex + 1); }}>›</button>
-          )}
         </div>
       )}
     </div>
