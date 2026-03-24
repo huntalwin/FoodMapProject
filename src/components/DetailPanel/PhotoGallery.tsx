@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { UserPhoto } from '../../types';
 import { getUserPhotosByPlaceId, deleteUserPhoto } from '../../db';
 import { getPhotoUrl } from '../../api/places';
@@ -31,17 +32,22 @@ export function PhotoGallery({ placeId, googlePhotoRefs, refreshKey }: Props) {
       setObjectUrls(urls);
     }
     load();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [placeId, refreshKey, userVisits]);
 
-  // Revoke object URLs on unmount
   useEffect(() => {
-    return () => {
-      Object.values(objectUrls).forEach(URL.revokeObjectURL);
-    };
+    return () => { Object.values(objectUrls).forEach(URL.revokeObjectURL); };
   }, [objectUrls]);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setLightboxIndex(null);
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [lightboxIndex]);
 
   async function handleDelete(photo: UserPhoto) {
     URL.revokeObjectURL(objectUrls[photo.id]);
@@ -57,6 +63,31 @@ export function PhotoGallery({ placeId, googlePhotoRefs, refreshKey }: Props) {
   const googleUrls = googlePhotoRefs.map((ref) => getPhotoUrl(ref));
   const myUrls = userPhotos.map((p) => objectUrls[p.id]).filter(Boolean);
   const activeUrls = tab === 'google' ? googleUrls : myUrls;
+
+  const lightbox = lightboxIndex !== null && activeUrls[lightboxIndex]
+    ? createPortal(
+        <div className="lightbox" onClick={() => setLightboxIndex(null)}>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <div className="lightbox-img-wrapper">
+              {lightboxIndex > 0 && (
+                <button className="lightbox-prev" onClick={() => setLightboxIndex(lightboxIndex - 1)}>‹</button>
+              )}
+              <img src={activeUrls[lightboxIndex]} alt="" className="lightbox-img" />
+              <button className="lightbox-close" onClick={() => setLightboxIndex(null)} title="Close (Esc)">✕</button>
+              {lightboxIndex < activeUrls.length - 1 && (
+                <button className="lightbox-next" onClick={() => setLightboxIndex(lightboxIndex + 1)}>›</button>
+              )}
+            </div>
+            <p className="lightbox-caption">
+              {tab === 'mine' && userPhotos[lightboxIndex]
+                ? `Uploaded ${new Date(userPhotos[lightboxIndex].uploadedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                : 'Photo via Google'}
+            </p>
+          </div>
+        </div>,
+        document.body
+      )
+    : null;
 
   return (
     <div className="photo-gallery">
@@ -105,27 +136,7 @@ export function PhotoGallery({ placeId, googlePhotoRefs, refreshKey }: Props) {
         </div>
       )}
 
-      {lightboxIndex !== null && activeUrls[lightboxIndex] && (
-        <div className="lightbox" onClick={() => setLightboxIndex(null)}>
-          <button className="lightbox-close">✕</button>
-          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <div className="lightbox-img-wrapper">
-              {lightboxIndex > 0 && (
-                <button className="lightbox-prev" onClick={() => setLightboxIndex(lightboxIndex - 1)}>‹</button>
-              )}
-              <img src={activeUrls[lightboxIndex]} alt="" className="lightbox-img" />
-              {lightboxIndex < activeUrls.length - 1 && (
-                <button className="lightbox-next" onClick={() => setLightboxIndex(lightboxIndex + 1)}>›</button>
-              )}
-            </div>
-            <p className="lightbox-caption">
-              {tab === 'mine' && userPhotos[lightboxIndex]
-                ? `Uploaded ${new Date(userPhotos[lightboxIndex].uploadedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}`
-                : 'Photo via Google'}
-            </p>
-          </div>
-        </div>
-      )}
+      {lightbox}
     </div>
   );
 }
