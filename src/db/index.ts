@@ -68,3 +68,13 @@ export async function deleteUserPhoto(id: string): Promise<void> {
   const db = await getDB();
   await db.delete('userPhotos', id);
 }
+
+export async function deleteRestaurant(placeId: string): Promise<void> {
+  const db = await getDB();
+  await db.delete('restaurants', placeId);
+}
+
+export async function deleteUserVisit(placeId: string): Promise<void> {
+  const db = await getDB();
+  await db.delete('userVisits', placeId);
+}

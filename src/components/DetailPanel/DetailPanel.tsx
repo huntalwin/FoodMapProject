@@ -12,6 +12,7 @@ export function DetailPanel() {
   const isDetailPanelOpen = useAppStore((s) => s.isDetailPanelOpen);
   const closeDetailPanel = useAppStore((s) => s.closeDetailPanel);
   const userVisits = useAppStore((s) => s.userVisits);
+  const removeVisit = useAppStore((s) => s.removeVisit);
   const userLocation = useUserLocation();
 
   const [showForm, setShowForm] = useState(false);
@@ -88,6 +89,15 @@ export function DetailPanel() {
               : showForm ? 'Cancel' : '+ Mark as Visited'}
           </button>
         </div>
+
+        {isVisited && !showForm && (
+          <button
+            className="btn-unvisit"
+            onClick={() => removeVisit(r.placeId)}
+          >
+            Remove Pin
+          </button>
+        )}
 
         {isVisited && !showForm && (
           <div className="visit-summary">

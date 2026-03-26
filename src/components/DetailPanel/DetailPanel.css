@@ -174,6 +174,23 @@
   background: #eaeaea;
 }
 
+.btn-unvisit {
+  width: 100%;
+  background: none;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  color: #999;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-unvisit:hover {
+  border-color: #e63946;
+  color: #e63946;
+}
+
 .visit-summary {
   background: #fafafa;
   border-radius: 10px;

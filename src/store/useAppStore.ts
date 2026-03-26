@@ -6,6 +6,10 @@ import {
   saveRestaurant,
   saveUserVisit,
   saveUserPhoto,
+  deleteRestaurant,
+  deleteUserVisit,
+  deleteUserPhoto,
+  getUserPhotosByPlaceId,
 } from '../db';
 
 interface AppState {
@@ -33,6 +37,7 @@ interface AppState {
   closeDetailPanel: () => void;
   markVisited: (r: Restaurant, visit: Omit<UserVisit, 'placeId' | 'visitedAt' | 'userPhotoIds'>, photos: File[]) => Promise<void>;
   updateVisit: (placeId: string, updates: Partial<Pick<UserVisit, 'rating' | 'notes'>>, newPhotos: File[]) => Promise<void>;
+  removeVisit: (placeId: string) => Promise<void>;
   loadUserData: () => Promise<void>;
 }
 
@@ -120,6 +125,21 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((state) => ({
       userVisits: { ...state.userVisits, [placeId]: updated },
     }));
+  },
+
+  removeVisit: async (placeId) => {
+    const photos = await getUserPhotosByPlaceId(placeId);
+    await Promise.all(photos.map((p) => deleteUserPhoto(p.id)));
+    await deleteUserVisit(placeId);
+    await deleteRestaurant(placeId);
+
+    set((state) => {
+      const visitedRestaurants = { ...state.visitedRestaurants };
+      const userVisits = { ...state.userVisits };
+      delete visitedRestaurants[placeId];
+      delete userVisits[placeId];
+      return { visitedRestaurants, userVisits };
+    });
   },
 
   loadUserData: async () => {
