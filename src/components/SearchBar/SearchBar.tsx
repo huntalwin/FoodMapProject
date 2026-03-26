@@ -54,7 +54,7 @@ export function SearchBar() {
           ref={inputRef}
           className="search-input"
           type="text"
-          placeholder="Search restaurants in Melbourne..."
+          placeholder="Search restaurants..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => searchQuery.trim() && setIsOpen(true)}
