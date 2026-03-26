@@ -53,12 +53,6 @@ export async function searchPlaces(query: string): Promise<Restaurant[]> {
     },
     body: JSON.stringify({
       textQuery: `${query} restaurant`,
-      locationBias: {
-        circle: {
-          center: { latitude: -37.8136, longitude: 144.9631 },
-          radius: 30000,
-        },
-      },
       maxResultCount: 10,
     }),
   });
