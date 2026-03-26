@@ -9,6 +9,8 @@ export interface Restaurant {
   websiteUri?: string;
   googlePhotoRefs: string[];
   priceLevel?: 1 | 2 | 3 | 4;
+  openNow?: boolean;
+  weekdayHours?: string[];
 }
 
 export interface UserVisit {

@@ -129,6 +129,53 @@
   font-size: 13px;
 }
 
+.opening-hours-section {
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.open-status {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.open-status.open {
+  color: #2d7a4f;
+}
+
+.open-status.closed {
+  color: #c0392b;
+}
+
+.hours-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hours-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  gap: 8px;
+}
+
+.hours-day {
+  color: #555;
+  font-weight: 500;
+  flex-shrink: 0;
+  width: 90px;
+}
+
+.hours-time {
+  color: #777;
+  text-align: right;
+}
+
 .detail-actions {
   display: flex;
   gap: 8px;

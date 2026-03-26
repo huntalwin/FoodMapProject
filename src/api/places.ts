@@ -13,6 +13,7 @@ const FIELD_MASK = [
   'places.websiteUri',
   'places.photos',
   'places.priceLevel',
+  'places.currentOpeningHours',
 ].join(',');
 
 function normalizePriceLevel(level: string | undefined): 1 | 2 | 3 | 4 | undefined {
@@ -40,6 +41,8 @@ function mapPlaceToRestaurant(place: any): Restaurant {
     websiteUri: place.websiteUri,
     googlePhotoRefs: (place.photos ?? []).slice(0, 5).map((p: { name: string }) => p.name),
     priceLevel: normalizePriceLevel(place.priceLevel),
+    openNow: place.currentOpeningHours?.openNow,
+    weekdayHours: place.currentOpeningHours?.weekdayDescriptions,
   };
 }
 

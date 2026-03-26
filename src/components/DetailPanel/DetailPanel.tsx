@@ -76,6 +76,27 @@ export function DetailPanel() {
           )}
         </div>
 
+        {r.openNow !== undefined && (
+          <div className="opening-hours-section">
+            <span className={`open-status ${r.openNow ? 'open' : 'closed'}`}>
+              {r.openNow ? '● Open now' : '● Closed now'}
+            </span>
+            {r.weekdayHours && (
+              <div className="hours-list">
+                {r.weekdayHours.map((line, i) => {
+                  const [day, ...rest] = line.split(': ');
+                  return (
+                    <div key={i} className="hours-row">
+                      <span className="hours-day">{day}</span>
+                      <span className="hours-time">{rest.join(': ')}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="detail-actions">
           <button className="btn-directions" onClick={handleDirections}>
             🧭 Show Directions
