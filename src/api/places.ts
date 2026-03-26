@@ -16,6 +16,19 @@ const FIELD_MASK = [
   'places.currentOpeningHours',
 ].join(',');
 
+const DETAIL_FIELD_MASK = [
+  'id',
+  'displayName',
+  'formattedAddress',
+  'location',
+  'types',
+  'internationalPhoneNumber',
+  'websiteUri',
+  'photos',
+  'priceLevel',
+  'currentOpeningHours',
+].join(',');
+
 function normalizePriceLevel(level: string | undefined): 1 | 2 | 3 | 4 | undefined {
   const map: Record<string, 1 | 2 | 3 | 4> = {
     PRICE_LEVEL_INEXPENSIVE: 1,
@@ -63,6 +76,18 @@ export async function searchPlaces(query: string): Promise<Restaurant[]> {
   if (!res.ok) throw new Error(`Places search failed: ${res.status}`);
   const data = await res.json();
   return (data.places ?? []).map(mapPlaceToRestaurant);
+}
+
+export async function getPlaceDetails(placeId: string): Promise<Restaurant> {
+  const res = await fetch(`${BASE_URL}/places/${placeId}`, {
+    headers: {
+      'X-Goog-Api-Key': API_KEY,
+      'X-Goog-FieldMask': DETAIL_FIELD_MASK,
+    },
+  });
+  if (!res.ok) throw new Error(`Place details failed: ${res.status}`);
+  const place = await res.json();
+  return mapPlaceToRestaurant(place);
 }
 
 export function getPhotoUrl(photoRef: string, maxWidth = 800): string {
